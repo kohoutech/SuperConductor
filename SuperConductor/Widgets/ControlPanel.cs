@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 SuperConductor : a midi sequencer
-Copyright (C) 1997-2017  George E Greaney
+Copyright (C) 1997-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,9 +37,8 @@ namespace SuperConductor.Widgets
 
         bool isPlaying;
 
-        public ControlPanel(SuperWindow _superWindow)
+        public ControlPanel()
         {
-            superWindow = _superWindow;
             InitializeComponent();
             isPlaying = false;
         }
@@ -47,7 +46,7 @@ namespace SuperConductor.Widgets
         public void setSequence(Sequence seq) 
         {
             curSequence = seq;
-            hsbSeqPos.Maximum = seq.duration;
+            hsbSeqPos.Maximum = seq.length;
         }
 
         public void setPlaying(bool on)

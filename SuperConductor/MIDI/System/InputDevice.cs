@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 Transonic MIDI Library
-Copyright (C) 1995-2017  George E Greaney
+Copyright (C) 1995-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 
 // p/invoke calls and structs used with WINMM.DLL library taken from http://www.pinvoke.net
 
-namespace Transonic.MIDI.Engine
+namespace Transonic.MIDI.System
 {
     public class InputDevice
     {
@@ -59,6 +59,8 @@ namespace Transonic.MIDI.Engine
         
         const int CALLBACK_FUNCTION = 0x30000;
 
+        List<SystemUnit> unitList;
+
         //cons
         public InputDevice(int _id, string _name)
         {
@@ -66,48 +68,73 @@ namespace Transonic.MIDI.Engine
             devName = _name;
             opened = false;
             started = false;
-            //Console.WriteLine("created device " + devName);
+            unitList = new List<SystemUnit>();            
         }
 
+        public void connectUnit(SystemUnit unit)
+        {
+            unitList.Add(unit);
+        }
 
 // midi funcs -----------------------------------------------------------------
 
+        //open the input device and set its event handler to HandleMessage()
         public void open()
         {
             if (!opened)
             {
                 midiInProc = HandleMessage;
                 MMRESULT result = midiInOpen(out devHandle, devID, midiInProc, IntPtr.Zero, CALLBACK_FUNCTION);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't open input device " + devName);
+                }
                 opened = true;
                 //Console.WriteLine("opened device " + devName + " result = " + result);
             }
         }
 
+        //start the input device sending midi event msgs to HandleMessage() until stop() is called
         public void start()
         {
             if (!started)
             {
                 MMRESULT result = midiInStart(devHandle);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't start input device " + devName);
+                }
                 started = true;
                 //Console.WriteLine("started device " + devName + " result = " + result);
             }
         }
 
+        //stop the input device from sending events msgs to HandleMesage()
         public void stop() 
         {
             if (started)
             {
                 MMRESULT result = midiInStop(devHandle);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't stop input device " + devName);
+                }
                 started = false;
                 //Console.WriteLine("stopped device " + devName + " result = " + result);
             }
         }
 
+        //close the input device and free up system resources
+        //if this isn't called when shutting down, it can cause the program to hang and the device to be unavailable
         public void close()
         {
             if (opened)
             {
                 MMRESULT result = midiInClose(devHandle);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't close input device " + devName);
+                }
                 opened = false;
                 //Console.WriteLine("closed device " + devName + " result = " + result);
             }
@@ -123,6 +150,11 @@ namespace Transonic.MIDI.Engine
         const int MIM_LONGERROR = 0x3C6;
         const int MIM_MOREDATA = 0x3CC;
 
+        //when the device receives incoming midi data, it sends a message here of one of the above types
+        //the midi data is passed in the params, MIM_DATA is for a short midi msg, all 3 midi bytes are packed into param1
+
+        //when we recieve any midi data, we send it all the connected system units as a raw array of bytes
+        //we let the system unit convert it to a midi msg, filter it and send it through the unit graph 
         private void HandleMessage(int handle, int msg, int instance, int param1, int param2)
         {
             if (msg == MIM_OPEN)    
@@ -133,18 +165,19 @@ namespace Transonic.MIDI.Engine
             }
             else if (msg == MIM_DATA)
             {
-                //byte[] msgbytes = BitConverter.GetBytes(param1);
-                //MidiShortMsg shortMsg = new MidiShortMsg(msgbytes[0], msgbytes[1], msgbytes[2], param2);
-                //foreach (InputUnit unit in unitList)
-                //{
-                //    unit.processShortMsg(shortMsg);
-                //}
+                //short midi message, 3 midi bytes packed into 32-bit int, highest byte unused
+                byte[] msgbytes = BitConverter.GetBytes(param1);
+                foreach (SystemUnit unit in unitList)
+                {
+                    unit.receiveMessage(msgbytes);
+                }
                 //Console.WriteLine("name = " + devName + ", " + instance + ", " +
                 //    msgbytes[0].ToString("X2") + "." + msgbytes[1].ToString("X2") + "." + msgbytes[2].ToString("X2") + ", " + 
                 //    param2.ToString("X8"));
             }
             else if (msg == MIM_LONGDATA)
-            {             
+            {
+                //we don't handle receiving sys ex msgs yet
             }
             else if (msg == MIM_MOREDATA)
             {

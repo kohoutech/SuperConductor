@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 Transonic MIDI Library
-Copyright (C) 1995-2017  George E Greaney
+Copyright (C) 1995-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ using Transonic.MIDI;
 
 // p/invoke calls and structs used with WINMM.DLL library taken from http://www.pinvoke.net
 
-namespace Transonic.MIDI.Engine
+namespace Transonic.MIDI.System
 {
     public class OutputDevice
     {
@@ -85,6 +85,10 @@ namespace Transonic.MIDI.Engine
             if (!opened)
             {
                 MMRESULT result = midiOutOpen(out devHandle, devID, IntPtr.Zero, IntPtr.Zero, CALLBACK_NULL);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't open output device " + devName);
+                }
                 opened = true;
                 //Console.WriteLine("opened device " + devName + " result = " + result);
             }
@@ -95,48 +99,43 @@ namespace Transonic.MIDI.Engine
             if (opened)
             {
                 MMRESULT result = midiOutClose(devHandle);
+                if (result != MMRESULT.MMSYSERR_NOERROR)
+                {
+                    throw new MidiSystemException("couldn't close output device " + devName);
+                }
                 opened = false;
                 //Console.WriteLine("closed device " + devName + " result = " + result);
             }
         }
 
         //only send channel and sysex messages
-        public void sendMessage(Message msg, int channel)
+        public void sendMessage(byte[] msg)
         {
-            if (msg is SysExMessage)
+            if (msg.Length > 3)
             {
                 //we don't handle sending sys ex msgs yet
             }
-            else if (msg.msgClass == Message.MESSAGECLASS.CHANNEL) 
+            else 
             {
-                byte[] data = msg.getDataBytes();
-                //data[0] += (byte)channel;
-                if (data != null)
-                {
-                    uint outMsg = (uint)((data[1] << 8) + data[0]);
-                    if (data.Length == 3) outMsg += (uint)(data[2] << 16);
-                    midiOutShortMsg(devHandle, outMsg);
-                    //Console.WriteLine("OUTPUT DEVICE: sent short msg to name = " + devName + " : " + data[0].ToString("X2") + "." + 
-                    //data[1].ToString("X2") + "." + data[2].ToString("X2"));  
-                }
+                //short midi message
+                uint outMsg = msg[0];
+                if (msg.Length > 1) outMsg += (uint)(msg[1] << 8);
+                if (msg.Length > 2) outMsg += (uint)(msg[2] << 16);
+                midiOutShortMsg(devHandle, outMsg);
+                //Console.WriteLine("OUTPUT DEVICE: sent short msg to name = " + devName + " : " + data[0].ToString("X2") + "." + 
+                //data[1].ToString("X2") + "." + data[2].ToString("X2"));                  
             }
         }
 
         //send an "all Notes Off" control msg to each channel
         public void allNotesOff()
         {
-            byte[] bytes = new byte[4];
-            bytes[0] = (byte)(0xb0);
-            bytes[1] = 123;
-            bytes[2] = 0;
-            bytes[3] = 0;
+            uint outMsg = (0x7b << 8) + 0xb0;
             for (int channel = 0; channel < 16; channel++)
             {
-                uint outMsg = BitConverter.ToUInt32(bytes, 0);
                 midiOutShortMsg(devHandle, outMsg);
-                bytes[0]++;
+                outMsg++;
             }
         }
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 Transonic MIDI Library
-Copyright (C) 1995-2017  George E Greaney
+Copyright (C) 1995-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,15 +22,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-//interface for midi engine to communicate back to user interface
-
-namespace Transonic.MIDI.Engine
+namespace Transonic.MIDI
 {
-    public interface IMidiView
+    public class MeterMap
     {
-        //public void sequenceBegin();
-        void handleMessage(int track, Transonic.MIDI.Message message);
-        void sequenceDone();
- 
+        public List<Meter> meters;
+        public int count;
+
+        public MeterMap()
+        {
+            meters = new List<Meter>();
+            Meter meter = new Meter(0, 6, 8, 0);
+            meters.Add(meter);
+            count = 1;
+        }
+    }
+
+//-----------------------------------------------------------------------------
+
+    public class Meter
+    {
+        public int tick;        //tick which the meter change occurs at
+        public int numer;
+        public int denom;
+        public int keysig;
+        public int measure;
+
+        public Meter(int _tick, int _numer, int _denom, int _keysig)
+        {
+            tick = _tick;
+            numer = _numer;
+            denom = _denom;
+            keysig = _keysig;
+            measure = 0;
+        }
     }
 }

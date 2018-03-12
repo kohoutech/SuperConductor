@@ -1,6 +1,6 @@
 ﻿/* ----------------------------------------------------------------------------
 SuperConductor : a midi sequencer
-Copyright (C) 1997-2017  George E Greaney
+Copyright (C) 1997-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,8 +27,9 @@ using System.Text;
 using System.Windows.Forms;
 
 using Transonic.MIDI;
+using Transonic.MIDI.System;
 using Transonic.MIDI.Engine;
-using SuperConductor.UI;
+using SuperConductor.UI.ViewTrack;
 using SuperConductor.Widgets;
 
 namespace SuperConductor
@@ -37,60 +38,61 @@ namespace SuperConductor
     {
         public MidiSystem midiSystem;
         Transport transport;
-        MidiFile currentFile;
+        String currentFilename;
         Sequence currentSeq;
-
-        public ControlPanel controlPanel;
-        public TrackView trackView;
 
         public SuperWindow()
         {
             midiSystem = new MidiSystem();
             transport = new Transport(this);
-            currentFile = null;
-            currentSeq = new Sequence(Sequence.DEFAULTDIVISION);
-
-            trackView = new TrackView(this, currentSeq);
-            trackView.Dock = DockStyle.Fill;
-            this.Controls.Add(trackView);
-
-            //control panel
-            controlPanel = new ControlPanel(this);
-            controlPanel.Dock = DockStyle.Top;
-            this.Controls.Add(controlPanel);
+            currentFilename = null;
+            currentSeq = new Sequence();
 
             InitializeComponent();
 
-            this.MinimumSize = new Size(this.Width, 250);
-            this.MaximumSize = new Size(this.Width, int.MaxValue);
-            trackView.setScrollbar(superStatus.Top - controlPanel.Bottom);
+            //wire up components
+            controlPanel.superWindow = this;
+            trackList.superWindow = this;
+            trackList.trackSplit = TrackSplit;
+            trackData.superWindow = this;
+            trackData.trackList = trackList;
+            trackData.vertScroll.Maximum = trackList.stripPanel.listHeight - trackList.stripPanel.Height + 9;
         }
 
-        private void SuperWindow_Resize(object sender, EventArgs e)
+        private void TrackSplit_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            trackView.setScrollbar(superStatus.Top - controlPanel.Bottom);
+            if (TrackSplit.SplitterDistance > trackList.listWidth)
+            {
+                TrackSplit.SplitterDistance = trackList.listWidth;
+            }
         }
 
 //- actions -------------------------------------------------------------------
 
         public void openSequence(String filename) 
         {
-            currentFile = new MidiFile(midiSystem, filename);
+            currentFilename = filename;
 
-            currentSeq = currentFile.readMidiFile();
-            this.Text = "SuperConductor [" + currentFile.filename + "]";
+            currentSeq = MidiFile.readMidiFile(filename);
+            this.Text = "SuperConductor [" + currentFilename + "]";
             transport.setSequence(currentSeq);
             controlPanel.setSequence(currentSeq);
-            for (int trackNum = 1; trackNum <= currentSeq.lastTrack; trackNum++)
+            trackList.setSequence(currentSeq);
+            setTrackOutput();
+        }
+
+        public void setTrackOutput()
+        {
+            for (int i = 0; i < currentSeq.tracks.Count; i++)
             {
-                trackView.strips[trackNum - 1].setTrack(currentSeq.tracks[trackNum]);
+                currentSeq.tracks[i].setOutputDevice(midiSystem.outputDevices[0]);
+                currentSeq.tracks[i].setOutputChannel(i);
             }
-            //currentSeq.dump();
         }
 
         public bool saveSequence(bool newName)
         {
-            if (newName || currentFile == null)
+            if (newName || currentFilename == null)
             {
                 String filename = "";
                 saveFileDialog.InitialDirectory = Application.StartupPath;
@@ -103,17 +105,17 @@ namespace SuperConductor
                 //add default extention if filename doesn't have one
                 if (!filename.Contains('.'))
                     filename = filename + ".mid";
-                currentFile = new MidiFile(midiSystem, filename);                
+                currentFilename = filename;
             }
-            currentFile.writeMidiFile(currentSeq);
-            String msg = "Current project has been saved as\n " + currentFile.filename;
+            MidiFile.writeMidiFile(currentSeq, currentFilename);
+            String msg = "Current project has been saved as\n " + currentFilename;
             MessageBox.Show(msg, "Saved");
             return true;
         }
 
         public void playSequence()
         {
-            transport.playSequence();
+            transport.play();
             masterTimer.Start();
             controlPanel.setPlaying(true);
         }
@@ -121,14 +123,14 @@ namespace SuperConductor
         public void stopSequence()
         {
             masterTimer.Stop();
-            transport.stopSequence();
+            transport.stop();
             controlPanel.setPlaying(false);
         }
 
         public void setSequencePos(int tick)
         {
-            transport.setSequencePos(tick);
-            int mstime = transport.getMilliSecTime();
+            transport.setCurrentPos(tick);
+            int mstime = transport.getCurrentTime();
             controlPanel.timerTick(tick, mstime);
         }
 
@@ -143,12 +145,13 @@ namespace SuperConductor
         private void openFileMenuItem_Click(object sender, EventArgs e)
         {
             String filename = "";
-            openFileDialog.InitialDirectory = Application.StartupPath;
-            openFileDialog.InitialDirectory = @"N:\midi";
-            openFileDialog.DefaultExt = "*.mid";
-            openFileDialog.Filter = "midi files|*.mid|All files|*.*";
-            openFileDialog.ShowDialog();
-            filename = openFileDialog.FileName;
+            //openFileDialog.InitialDirectory = Application.StartupPath;
+            //openFileDialog.InitialDirectory = @"N:\midi";
+            //openFileDialog.DefaultExt = "*.mid";
+            //openFileDialog.Filter = "midi files|*.mid|All files|*.*";
+            //openFileDialog.ShowDialog();
+            //filename = openFileDialog.FileName;
+            filename = "Spartacus.mid";
             if (filename.Length == 0) return;
 
             openSequence(filename);
@@ -183,26 +186,22 @@ namespace SuperConductor
 
         private void stopTransportMenuItem_Click(object sender, EventArgs e)
         {
-            transport.stopSequence();
+            transport.stop();
         }
 
 //- help events ---------------------------------------------------------------
 
         private void aboutHelpMenuItem_Click(object sender, EventArgs e)
         {
-            String msg = "SuperConductor\nversion 1.0.0\n" + "\xA9 Transonic Software 1997-2017\n" + "http://transonic.kohoutech.com";
+            String msg = "SuperConductor\nversion 1.1.0\n" + "\xA9 Transonic Software 1997-2018\n" + "http://transonic.kohoutech.com";
             MessageBox.Show(msg, "About");
         }
 
         private void masterTimer_Tick(object sender, EventArgs e)
         {
-            int tick = transport.tickCount;
-            int tempo = transport.curTempo.tempo;
-            Timing timing = transport.curTempo.timing;
-            float delta = (float)(tick - timing.tick);
-            int time = (int)(((delta / currentSeq.division) * tempo) + timing.microsec) / 1000;
-
-            controlPanel.timerTick(tick, time);
+            int tick = transport.getCurrentPos();
+            int mstime = transport.getCurrentTime();
+            controlPanel.timerTick(tick, mstime);
         }
 
         //iMidiView iface
@@ -212,6 +211,8 @@ namespace SuperConductor
 
         public void sequenceDone()
         {
+            masterTimer.Stop();
+            controlPanel.setPlaying(false);
         }
     }
 }

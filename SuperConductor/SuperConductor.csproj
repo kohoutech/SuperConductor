@@ -55,13 +55,16 @@
     <Compile Include="Dialogs\TrackSettings.Designer.cs">
       <DependentUpon>TrackSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="MIDI\Engine\IMidiView.cs" />
-    <Compile Include="MIDI\Engine\InputDevice.cs" />
-    <Compile Include="MIDI\Engine\MidiSystem.cs" />
     <Compile Include="MIDI\Engine\MidiTimer.cs" />
-    <Compile Include="MIDI\Engine\OutputDevice.cs" />
     <Compile Include="MIDI\Engine\Transport.cs" />
+    <Compile Include="MIDI\MarkerMap.cs" />
     <Compile Include="MIDI\Message.cs" />
+    <Compile Include="MIDI\MeterMap.cs" />
+    <Compile Include="MIDI\System\InputDevice.cs" />
+    <Compile Include="MIDI\System\MidiSystem.cs" />
+    <Compile Include="MIDI\System\OutputDevice.cs" />
+    <Compile Include="MIDI\System\SystemUnit.cs" />
+    <Compile Include="MIDI\TempoMap.cs" />
     <Compile Include="SuperWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,17 +77,15 @@
     <Compile Include="MIDI\Track.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\TrackStrip.cs">
+    <Compile Include="UI\ViewTrack\TrackData.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\TrackStrip.Designer.cs">
-      <DependentUpon>TrackStrip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\TrackView.cs">
+    <Compile Include="UI\ViewTrack\TrackList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\TrackView.Designer.cs">
-      <DependentUpon>TrackView.cs</DependentUpon>
+    <Compile Include="UI\ViewTrack\TrackStrip.cs" />
+    <Compile Include="UI\ViewTrack\TrackStripPanel.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Widgets\ControlPanel.cs">
       <SubType>UserControl</SubType>
@@ -107,11 +108,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UI\TrackStrip.resx">
-      <DependentUpon>TrackStrip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\TrackView.resx">
-      <DependentUpon>TrackView.cs</DependentUpon>
+    <EmbeddedResource Include="UI\ViewTrack\TrackList.resx">
+      <DependentUpon>TrackList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\ControlPanel.resx">
       <DependentUpon>ControlPanel.cs</DependentUpon>
@@ -128,6 +126,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SuperConductor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI\ViewEvent\" />
+    <Folder Include="UI\ViewPianoRoll\" />
+    <Folder Include="UI\ViewScore\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

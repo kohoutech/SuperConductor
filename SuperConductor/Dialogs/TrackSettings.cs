@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using Transonic.MIDI.System;
 using Transonic.MIDI.Engine;
 
 namespace SuperConductor.Dialogs

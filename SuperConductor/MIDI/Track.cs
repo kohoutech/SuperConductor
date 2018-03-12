@@ -1,6 +1,6 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 Transonic MIDI Library
-Copyright (C) 1995-2017  George E Greaney
+Copyright (C) 1995-2018  George E Greaney
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,16 +22,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Transonic.MIDI.Engine;
+using Transonic.MIDI.System;
 
 namespace Transonic.MIDI
 {
-    public class Track
+    public class Track : SystemUnit
     {
-        public int number;
-        public String name;
+        public Sequence seq;
         public List<Event> events;
-        public int duration;
+        public int length;
 
         //track i/o
         public InputDevice inDev;
@@ -43,18 +42,18 @@ namespace Transonic.MIDI
         public bool recording;
 
         public int keyOfs;
-        public int VelOfs;
-        public int TimeOfs;
+        public int velOfs;
+        public int timeOfs;
 
         public int bankNum;
         public int patchNum;
         public int volume;
         public int pan;
 
-        public Track(int _num)
+        public Track(String name)
+            : base(name)
         {
-            number = _num;
-            name = "Track " + number.ToString();
+            seq = null;
             events = new List<Event>();
 
             muted = false;
@@ -64,14 +63,22 @@ namespace Transonic.MIDI
             inputChannel = 1;
             outDev = null;
             outputChannel = 1;
+
+            keyOfs = 0;
+            velOfs = 0;
+            timeOfs = 0;
+
+            bankNum = 0;
             patchNum = 0;
             volume = 127;
+            pan = 64;
         }
 
 //- track settings -----------------------------------------------------------------
 
         public void setName(String _name)
         {
+            name = _name;
         }
 
         public void setMuted(bool on)
@@ -80,14 +87,6 @@ namespace Transonic.MIDI
             if (muted)
             {
                 allNotesOff();
-            }
-        }
-
-        public void setSoloing(bool on)
-        {
-            if (on)
-            {
-                muted = false;
             }
         }
 
@@ -137,7 +136,12 @@ namespace Transonic.MIDI
         {
             if (!muted)
             {
-                outDev.sendMessage(msg, outputChannel);
+                byte[] bytes = msg.getDataBytes();
+                if (msg is ChannelMessage)
+                {
+                    bytes[0] |= (byte)outputChannel;
+                }
+                outDev.sendMessage(bytes);
             }
         }
 
@@ -149,114 +153,50 @@ namespace Transonic.MIDI
             }
         }
 
-//- track loading -------------------------------------------------------------
+//- event handling ------------------------------------------------------------
 
         public void addEvent(Event evt)
         {
             events.Add(evt);
-        }
-
-        public void finalizeLoad() 
-        {
-            duration = (int)events[events.Count - 1].time;
-            loadTrackSettings();
-        }
-
-        //scan track for name meta event, use the first one we find (should be only one)
-        public void loadTrackSettings() 
-        {
-            bool haveName = false;
-            bool haveOutChannel = false;
-            bool havePatchNum = false;
-            bool haveVolume = false;
-            for (int i = 0; i < events.Count; i++)
+            if (evt.tick > length)
             {
-                if (!haveName && events[i].msg is TrackNameMessage)
+                length = (int)evt.tick;
+                if ((seq != null) && (length > seq.length))
                 {
-                    TrackNameMessage nameMsg = (TrackNameMessage)events[i].msg;
-                    name = nameMsg.trackName;
-                    haveName = true;
-                }
-
-                if (!haveOutChannel && events[i].msg is NoteOnMessage)
-                {
-                    NoteOnMessage noteMsg = (NoteOnMessage)events[i].msg;
-                    outputChannel = noteMsg.channel;
-                    haveOutChannel = true;
-                }
-
-                if (!havePatchNum && events[i].msg is PatchChangeMessage)
-                {
-                    PatchChangeMessage patchMsg = (PatchChangeMessage)events[i].msg;
-                    patchNum = patchMsg.patchNumber;
-                    havePatchNum = true;
-                }
-
-                if (!haveVolume && events[i].msg is ControllerMessage)
-                {
-                    ControllerMessage ctrlMsg = (ControllerMessage)events[i].msg;
-                    if (ctrlMsg.controllerNumber == 7)
-                    {
-                        volume = ctrlMsg.controllerValue;
-                        haveVolume = true;
-                    }
-                }
-
-                if (haveName && haveOutChannel && havePatchNum && haveVolume) break;
+                    seq.length = length;
+                }               
             }
         }
 
 //- track saving -------------------------------------------------------------
 
-        public List<byte> saveTrack(MidiFile midifile)
+        public void saveTrack(MidiOutStream stream)
         {
-            List<byte> bytes = new List<byte>();
+            //List<byte> data = new List<byte>();
 
-            uint curtime = 0;
-            foreach(Event evt in events) {
-                uint delta = evt.time - curtime;
-                curtime = evt.time;
-                List<byte> vardelta = getVarLenQuantity(delta);
-                bytes.AddRange(vardelta);
-                byte[] msgbytes = evt.msg.getDataBytes();
-                bytes.AddRange(msgbytes);
-            }
+            //uint curtime = 0;
+            //foreach(Event evt in events) {
+            //    uint delta = evt.time - curtime;
+            //    curtime = evt.time;
+            //    List<byte> vardelta = stream.getVarLenQuantity(delta);
+            //    data.AddRange(vardelta);
+            //    byte[] msgbytes = evt.msg.getDataBytes();
+            //    data.AddRange(msgbytes);
+            //}
 
-            //track header
-            int size = bytes.Count;
-            bytes.InsertRange(0, Encoding.ASCII.GetBytes("MTrk"));
-            bytes.InsertRange(4,midifile.putFour(size));
-
-            return bytes;
+            ////track header
+            //int size = data.Count;
+            //stream.putString("MTrk");
+            //stream.putFour(size);
+            //stream.putData(data.ToArray());
         }
 
-        public List<byte> getVarLenQuantity(uint delta) 
-        {
-            List<byte> result = new List<byte>();
-            for (int i = 0; i < 4; i++)
-            {
-                if (delta >= 0x80)
-                {
-                    result.Add((byte)(delta % 0x80));
-                    delta /= 0x80;
-                } else 
-                {
-                    result.Add((byte)delta);
-                    break;
-                }
-            }
-            result.Reverse();
-            for (int i = 0; i < result.Count - 1; i++)
-                result[i] += 0x80;
-            return result;
-        }
-
-        public void dump()
-        {
-            for (int i = 0; i < events.Count; i++)
-            {
-                events[i].dump();
-            }
-        }
+        //public void dump()
+        //{
+        //    for (int i = 0; i < events.Count; i++)
+        //    {
+        //        events[i].dump();
+        //    }
+        //}
     }
 }

@@ -48,7 +48,15 @@
             this.masterTimer = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.TrackSplit = new System.Windows.Forms.SplitContainer();
+            this.trackList = new SuperConductor.UI.ViewTrack.TrackList();
+            this.trackData = new SuperConductor.UI.ViewTrack.TrackData();
+            this.controlPanel = new SuperConductor.Widgets.ControlPanel();
             this.superMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TrackSplit)).BeginInit();
+            this.TrackSplit.Panel1.SuspendLayout();
+            this.TrackSplit.Panel2.SuspendLayout();
+            this.TrackSplit.SuspendLayout();
             this.SuspendLayout();
             // 
             // superMenu
@@ -83,7 +91,7 @@
             this.newFileMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newFileMenuItem.Name = "newFileMenuItem";
             this.newFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newFileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newFileMenuItem.Size = new System.Drawing.Size(146, 22);
             this.newFileMenuItem.Text = "&New";
             this.newFileMenuItem.Click += new System.EventHandler(this.newFileMenuItem_Click);
             // 
@@ -93,14 +101,14 @@
             this.openFileMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openFileMenuItem.Name = "openFileMenuItem";
             this.openFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openFileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openFileMenuItem.Size = new System.Drawing.Size(146, 22);
             this.openFileMenuItem.Text = "&Open";
             this.openFileMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(143, 6);
             // 
             // saveFileMenuItem
             // 
@@ -108,26 +116,26 @@
             this.saveFileMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveFileMenuItem.Name = "saveFileMenuItem";
             this.saveFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveFileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveFileMenuItem.Size = new System.Drawing.Size(146, 22);
             this.saveFileMenuItem.Text = "&Save";
             this.saveFileMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
             // 
             // saveAsFileMenuItem
             // 
             this.saveAsFileMenuItem.Name = "saveAsFileMenuItem";
-            this.saveAsFileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsFileMenuItem.Size = new System.Drawing.Size(146, 22);
             this.saveAsFileMenuItem.Text = "Save &As";
             this.saveAsFileMenuItem.Click += new System.EventHandler(this.saveAsFileMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
             // 
             // exitFileMenuItem
             // 
             this.exitFileMenuItem.Name = "exitFileMenuItem";
-            this.exitFileMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitFileMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitFileMenuItem.Text = "E&xit";
             this.exitFileMenuItem.Click += new System.EventHandler(this.exitFileMenuItem_Click);
             // 
@@ -185,11 +193,61 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
+            // TrackSplit
+            // 
+            this.TrackSplit.BackColor = System.Drawing.Color.Crimson;
+            this.TrackSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TrackSplit.Location = new System.Drawing.Point(0, 74);
+            this.TrackSplit.Name = "TrackSplit";
+            // 
+            // TrackSplit.Panel1
+            // 
+            this.TrackSplit.Panel1.Controls.Add(this.trackList);
+            this.TrackSplit.Panel1MinSize = 50;
+            // 
+            // TrackSplit.Panel2
+            // 
+            this.TrackSplit.Panel2.Controls.Add(this.trackData);
+            this.TrackSplit.Size = new System.Drawing.Size(719, 315);
+            this.TrackSplit.SplitterDistance = 362;
+            this.TrackSplit.SplitterWidth = 6;
+            this.TrackSplit.TabIndex = 7;
+            this.TrackSplit.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.TrackSplit_SplitterMoved);
+            // 
+            // trackList
+            // 
+            this.trackList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trackList.Location = new System.Drawing.Point(0, 0);
+            this.trackList.MaximumSize = new System.Drawing.Size(835, 6447);
+            this.trackList.Name = "trackList";
+            this.trackList.Size = new System.Drawing.Size(362, 315);
+            this.trackList.TabIndex = 0;
+            // 
+            // trackData
+            // 
+            this.trackData.BackColor = System.Drawing.Color.LightBlue;
+            this.trackData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trackData.Location = new System.Drawing.Point(0, 0);
+            this.trackData.Name = "trackData";
+            this.trackData.Size = new System.Drawing.Size(351, 315);
+            this.trackData.TabIndex = 0;
+            // 
+            // controlPanel
+            // 
+            this.controlPanel.BackColor = System.Drawing.Color.Crimson;
+            this.controlPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.controlPanel.Location = new System.Drawing.Point(0, 24);
+            this.controlPanel.Name = "controlPanel";
+            this.controlPanel.Size = new System.Drawing.Size(719, 50);
+            this.controlPanel.TabIndex = 6;
+            // 
             // SuperWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 411);
+            this.Controls.Add(this.TrackSplit);
+            this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.superStatus);
             this.Controls.Add(this.superMenu);
             this.DoubleBuffered = true;
@@ -197,9 +255,12 @@
             this.MainMenuStrip = this.superMenu;
             this.Name = "SuperWindow";
             this.Text = "SuperConductor";
-            this.Resize += new System.EventHandler(this.SuperWindow_Resize);
             this.superMenu.ResumeLayout(false);
             this.superMenu.PerformLayout();
+            this.TrackSplit.Panel1.ResumeLayout(false);
+            this.TrackSplit.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.TrackSplit)).EndInit();
+            this.TrackSplit.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -226,6 +287,10 @@
         private System.Windows.Forms.Timer masterTimer;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private Widgets.ControlPanel controlPanel;
+        private System.Windows.Forms.SplitContainer TrackSplit;
+        private UI.ViewTrack.TrackData trackData;
+        private UI.ViewTrack.TrackList trackList;
     }
 }
 
