@@ -26,14 +26,14 @@ using System.Drawing;
 
 namespace SuperConductor.UI.ViewTrack
 {
-    class TrackData : UserControl
+    class TrackDataPane : UserControl
     {
         public SuperWindow superWindow;
-        public TrackList trackList;
+        public TrackListPane trackList;
         public HScrollBar horzScroll;
         public VScrollBar vertScroll;
 
-        public TrackData()
+        public TrackDataPane()
         {
             BackColor = Color.LightBlue;
 

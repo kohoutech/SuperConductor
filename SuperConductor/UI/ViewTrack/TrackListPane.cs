@@ -28,7 +28,7 @@ using Transonic.MIDI;
 
 namespace SuperConductor.UI.ViewTrack
 {
-    public class TrackList : UserControl
+    public class TrackListPane : UserControl
     {
         public const int TRACKCOUNT = 256;
         public const int HEADERHEIGHT = 30;
@@ -48,7 +48,7 @@ namespace SuperConductor.UI.ViewTrack
         public HScrollBar horzScroll;
         public int horzOffset;
 
-        public TrackList()
+        public TrackListPane()
         {
             superWindow = null;
             trackSplit = null;

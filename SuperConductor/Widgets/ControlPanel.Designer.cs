@@ -36,6 +36,7 @@
             this.btnPanic = new System.Windows.Forms.Button();
             this.btnStep = new System.Windows.Forms.Button();
             this.btnLoop = new System.Windows.Forms.Button();
+            this.lblBeatCounter = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnPlay
@@ -119,11 +120,24 @@
             this.btnLoop.UseVisualStyleBackColor = true;
             this.btnLoop.Click += new System.EventHandler(this.btnLoop_Click);
             // 
+            // lblBeatCounter
+            // 
+            this.lblBeatCounter.BackColor = System.Drawing.Color.Black;
+            this.lblBeatCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBeatCounter.ForeColor = System.Drawing.Color.LawnGreen;
+            this.lblBeatCounter.Location = new System.Drawing.Point(720, 11);
+            this.lblBeatCounter.Name = "lblBeatCounter";
+            this.lblBeatCounter.Size = new System.Drawing.Size(120, 23);
+            this.lblBeatCounter.TabIndex = 16;
+            this.lblBeatCounter.Text = "000:00:000";
+            this.lblBeatCounter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // ControlPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Crimson;
+            this.Controls.Add(this.lblBeatCounter);
             this.Controls.Add(this.btnLoop);
             this.Controls.Add(this.btnStep);
             this.Controls.Add(this.btnPanic);
@@ -133,7 +147,7 @@
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnPlay);
             this.Name = "ControlPanel";
-            this.Size = new System.Drawing.Size(720, 50);
+            this.Size = new System.Drawing.Size(860, 50);
             this.ResumeLayout(false);
 
         }
@@ -148,5 +162,6 @@
         private System.Windows.Forms.Button btnPanic;
         private System.Windows.Forms.Button btnStep;
         private System.Windows.Forms.Button btnLoop;
+        private System.Windows.Forms.Label lblBeatCounter;
     }
 }

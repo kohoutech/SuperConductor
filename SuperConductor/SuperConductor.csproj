@@ -77,10 +77,10 @@
     <Compile Include="MIDI\Track.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\ViewTrack\TrackData.cs">
+    <Compile Include="UI\ViewTrack\TrackDataPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\ViewTrack\TrackList.cs">
+    <Compile Include="UI\ViewTrack\TrackListPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\ViewTrack\TrackStrip.cs" />
@@ -108,8 +108,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UI\ViewTrack\TrackList.resx">
-      <DependentUpon>TrackList.cs</DependentUpon>
+    <EmbeddedResource Include="UI\ViewTrack\TrackListPane.resx">
+      <DependentUpon>TrackListPane.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\ControlPanel.resx">
       <DependentUpon>ControlPanel.cs</DependentUpon>

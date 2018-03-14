@@ -51,20 +51,27 @@ namespace Transonic.MIDI
                 pos = tempos.Count - 1;
             }
             else
-            {            
-                while ((pos < tempos.Count) && (tempo.tick > tempos[pos].tick)) pos++;
-                if (tempo.tick == tempos[pos].tick)
+            {
+                while ((pos < tempos.Count) && (tempo.tick > tempos[pos].tick))
+                {
+                    pos++;
+                }
+                if (tempo.tick == tempos[pos].tick)     //if we already have a temp change at this tick, replace it
                 {
                     tempos[pos] = tempo;
                 }
                 else
                 {
-                    tempos.Insert(pos, tempo);
+                    tempos.Insert(pos, tempo);          //else insert new tempo change into list at this pos
                 }
             }
             count = tempos.Count;
+            calcTempoMap(pos);
+        }
 
-            for (int i = pos; i < tempos.Count; i++) 
+        public void calcTempoMap(int pos)           //calc time of each tempo change from this tempo to tempo list end
+        {
+            for (int i = pos; i < tempos.Count; i++)
             {
                 if (i == 0)
                 {
@@ -74,7 +81,7 @@ namespace Transonic.MIDI
                 {
                     Tempo prev = tempos[i - 1];
                     int delta = tempos[i].tick - prev.tick;                         //amount of ticks from prev tempo to this one
-                    double deltatime = (((float)delta) / seq.division) * prev.rate;
+                    double deltatime = (((double)delta) / seq.division) * prev.rate;
                     tempos[i].time = prev.time + (int)deltatime;                    //calc time in microsec of this tempo event
                 }
             }
@@ -88,7 +95,7 @@ namespace Transonic.MIDI
             {
                 tempoPos++;
             }
-            tempoPos--;
+            tempoPos--;                     //we passed it, or at end of list; back up one tempo
             return tempos[tempoPos];
         }
     }

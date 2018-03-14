@@ -213,14 +213,16 @@ namespace Transonic.MIDI.Engine
             return (int)(tickTime / 10000L);            //ret tick time in msec
         }
 
-        public void getCurrentBeat(out int measure, out decimal beat)
+        public void getCurrentBeat(out int measure, out int beat, out int ticks)
         {
-            int measureticks = (division * 4 * curMeter.numer) / curMeter.denom;
+            int beatticks = (division * 4) / curMeter.denom;
+            int measureticks = (beatticks * curMeter.numer);
 
-            int ticks = tickNum - curMeter.tick;
+            ticks = tickNum - curMeter.tick;
             measure = curMeter.measure + (ticks / measureticks);
             ticks = ticks % measureticks;
-            beat = ((decimal)ticks) / division;
+            beat = (ticks / beatticks) + 1;
+            ticks = ticks % beatticks;
         }
 
 //- timer method --------------------------------------------------------------

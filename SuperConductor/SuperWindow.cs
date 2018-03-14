@@ -131,7 +131,11 @@ namespace SuperConductor
         {
             transport.setCurrentPos(tick);
             int mstime = transport.getCurrentTime();
-            controlPanel.timerTick(tick, mstime);
+            int measure = 0;
+            int beat = 0;
+            int beatticks = 0;
+            transport.getCurrentBeat(out measure, out beat, out beatticks);
+            controlPanel.timerTick(tick, mstime, measure, beat, beatticks);
         }
 
         public void panic()
@@ -151,7 +155,7 @@ namespace SuperConductor
             //openFileDialog.Filter = "midi files|*.mid|All files|*.*";
             //openFileDialog.ShowDialog();
             //filename = openFileDialog.FileName;
-            filename = "Spartacus.mid";
+            filename = "testS.mid";
             if (filename.Length == 0) return;
 
             openSequence(filename);
@@ -197,11 +201,17 @@ namespace SuperConductor
             MessageBox.Show(msg, "About");
         }
 
+//- updating ------------------------------------------------------------------
+
         private void masterTimer_Tick(object sender, EventArgs e)
         {
             int tick = transport.getCurrentPos();
             int mstime = transport.getCurrentTime();
-            controlPanel.timerTick(tick, mstime);
+            int measure = 0;
+            int beat = 0;
+            int beatticks = 0;
+            transport.getCurrentBeat(out measure, out beat, out beatticks);
+            controlPanel.timerTick(tick, mstime, measure, beat, beatticks);
         }
 
         //iMidiView iface

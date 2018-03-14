@@ -30,7 +30,9 @@ namespace Transonic.MIDI
     {
         public Sequence seq;
         public List<Event> events;
-        public int length;
+
+        public int length;                  //total length in ticks
+        public int measures;                //num of measures in track
 
         //track i/o
         public InputDevice inDev;
@@ -55,6 +57,8 @@ namespace Transonic.MIDI
         {
             seq = null;
             events = new List<Event>();
+            length = 0;
+            measures = 0;
 
             muted = false;
             recording = false;

@@ -102,7 +102,7 @@ namespace SuperConductor.Widgets
 
 //-----------------------------------------------------------------------------
 
-        public void timerTick(int tick, int msTime)
+        public void timerTick(int tick, int msTime, int measure, int beat, int beatticks)
         {
             int msVal = msTime % 1000;
             int secPos = msTime / 1000;
@@ -112,6 +112,8 @@ namespace SuperConductor.Widgets
             int hrVal = minPos / 60;
             lblPosCounter.Text = hrVal.ToString("D2") + ":" + minVal.ToString("D2") + ":" +
                 secVal.ToString("D2") + "." + msVal.ToString("D3");
+
+            lblBeatCounter.Text = measure.ToString("D3") + ":" + beat.ToString("D2") + ":" + beatticks.ToString("D3");
 
             hsbSeqPos.Value = tick;
 

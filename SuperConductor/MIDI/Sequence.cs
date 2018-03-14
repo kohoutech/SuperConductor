@@ -29,9 +29,10 @@ namespace Transonic.MIDI
     public class Sequence
     {
         public const int DEFAULTDIVISION = 96;         //ticks / quarter note
+        public int division;                           //ppq - ticks (pulses) / quarter note
 
-        public int division;                //ppq - ticks (pulses) / quarter note
         public int length;                  //total length in ticks
+        public int measures;                //num of measures in longest track
 
         public List<Track> tracks;
         public TempoMap tempoMap;
@@ -46,11 +47,12 @@ namespace Transonic.MIDI
         {
             division = _division;
             length = 0;
+            measures = 0;
 
             tracks = new List<Track>();
             tempoMap = new TempoMap(this);
-            meterMap = new MeterMap();
-            markerMap = new MarkerMap();
+            meterMap = new MeterMap(this);
+            markerMap = new MarkerMap(this);
 
             track0Saved = null;
         }
@@ -63,6 +65,11 @@ namespace Transonic.MIDI
             {
                 length = track.length;
             }
+            if (track.measures > measures)
+            {
+                measures = track.measures;
+            }
+
         }
 
         public void deleteTrack(Track track)

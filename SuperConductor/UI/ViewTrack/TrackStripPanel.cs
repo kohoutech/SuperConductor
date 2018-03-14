@@ -29,21 +29,21 @@ namespace SuperConductor.UI.ViewTrack
 {
     public class TrackStripPanel : UserControl
     {
-        public TrackList trackList;
+        public TrackListPane trackList;
 
         public List<TrackStrip> strips;
 
         public int listHeight;            
         public int vertOffset;
 
-        public TrackStripPanel(TrackList _trackList)
+        public TrackStripPanel(TrackListPane _trackList)
         {
             trackList = _trackList;
 
             //track strips
             listHeight = 0;
-            strips = new List<TrackStrip>(TrackList.TRACKCOUNT);
-            for (int i = 0; i < TrackList.TRACKCOUNT; i++)
+            strips = new List<TrackStrip>(TrackListPane.TRACKCOUNT);
+            for (int i = 0; i < TrackListPane.TRACKCOUNT; i++)
             {
                 TrackStrip strip = new TrackStrip(trackList, i + 1);
                 strip.setPos(listHeight);

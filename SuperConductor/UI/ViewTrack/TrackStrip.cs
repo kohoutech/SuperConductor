@@ -32,7 +32,7 @@ namespace SuperConductor.UI.ViewTrack
     {
         public const int STRIPHEIGHT = 25;
 
-        TrackList trackList;
+        TrackListPane trackList;
         int trackNum;
         Track track;
 
@@ -41,7 +41,7 @@ namespace SuperConductor.UI.ViewTrack
         float[] colwidth;
         float width;
 
-        public TrackStrip(TrackList _trackList, int num) 
+        public TrackStrip(TrackListPane _trackList, int num) 
         {
             trackList = _trackList;
             trackNum = num;
