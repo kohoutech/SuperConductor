@@ -80,6 +80,14 @@ namespace Transonic.MIDI.Engine
         {
             curTempo = tempo;
             tickLen = (long)((curTempo.rate / (division * playbackSpeed)) * 10.0f);     //len of each tick in 0.1 usecs (or 100 nanosecs)
+            window.tempoChange(curTempo.rate);
+        }
+
+        //tempo is len of quarter note in microsecs, division is number of ticks / quarter note
+        public void setMeter(Meter meter)
+        {
+            curMeter = meter;
+            window.meterChange(curMeter.numer, curMeter.denom, curMeter.keysig);
         }
 
 
@@ -134,7 +142,7 @@ namespace Transonic.MIDI.Engine
                 setTempo(tempoMap.tempos[tempoPos++]);
 
                 meterPos = 0;
-                curMeter = meterMap.meters[meterPos++];
+                setMeter(meterMap.meters[meterPos++]);
 
                 tickNum = 0;
                 tickTime = tickLen;                    //time of first tick (not 0 - that would be no ticks)
@@ -180,6 +188,9 @@ namespace Transonic.MIDI.Engine
 
                 startOffset = tickTime;                             //the elapsed time since seq start
                 startTime = DateTime.Now.Ticks - startOffset;       //start time is when we would have started playing up to now
+
+                Meter meter = meterMap.findMeter(tickNum, out meterPos);
+                setMeter(meter);
 
                 //set cur pos in each track
                 //find and send most recent patch change message for each track
@@ -249,6 +260,14 @@ namespace Transonic.MIDI.Engine
                     tempoPos++;           
                 }
 
+                //handle meter msgs
+                if ((meterPos < meterMap.count) && (tickNum >= meterMap.meters[meterPos].tick))
+                {
+                    Meter meter = meterMap.meters[meterPos];
+                    setMeter(meter);
+                    meterPos++;
+                }
+
                 //handle track events for each track
                 //alldone will be true when we've reached the end of every track
                 for (int trackNum = 0; trackNum < trackCount; trackNum++)
@@ -296,6 +315,9 @@ namespace Transonic.MIDI.Engine
         void handleMessage(int track, Transonic.MIDI.Message message);
 
         void sequenceDone();
+
+        void tempoChange(int rate);
+        void meterChange(int numer, int denom, int key);
     }
 }
 

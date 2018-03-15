@@ -262,10 +262,10 @@ namespace Transonic.MIDI
 
     public class TimeSignatureEvent : MetaEvent         //0xff 0x58
     {
-        int numer;
-        int denom;
-        int clicks;
-        int clocksPerQuarter;
+        public int numer;
+        public int denom;
+        public int clicks;
+        public int clocksPerQuarter;
 
         public TimeSignatureEvent(uint time, int nn, int dd, int cc, int bb)
             : base(time)
@@ -284,8 +284,8 @@ namespace Transonic.MIDI
 
     public class KeySignatureEvent : MetaEvent          //0xff 0x59
     {
-        int keySig;
-        bool minor;
+        public int keySig;
+        public bool minor;
 
         public KeySignatureEvent(uint time, int sf, int mi)
             : base(time)

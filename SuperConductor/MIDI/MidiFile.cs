@@ -384,6 +384,7 @@ namespace Transonic.MIDI
             //int prevtick = 0;           //tick of prev tempo event
 
             Track track0 = seq.tracks[0];
+            Meter prevMeter = null;
             for (int i = 0; i < track0.events.Count; i++)
             {
                 Event evt = track0.events[i];
@@ -396,10 +397,24 @@ namespace Transonic.MIDI
                 {                    
                 }
                 else if (evt is TimeSignatureEvent)
-                {                 
+                {
+                    int keysig = (prevMeter != null) ? prevMeter.keysig : 0;
+                    Meter meter = new Meter((int)evt.tick, ((TimeSignatureEvent)evt).numer, ((TimeSignatureEvent)evt).denom, keysig);
+                    seq.meterMap.addMeter(meter);
+                    prevMeter = meter;
                 }
                 else if (evt is KeySignatureEvent)
-                {                 
+                {
+                    int numer = 4;
+                    int denom = 4;
+                    if (prevMeter != null)
+                    {
+                        numer = prevMeter.numer;
+                        denom = prevMeter.denom;
+                    }
+                    Meter meter = new Meter((int)evt.tick, numer, denom, ((KeySignatureEvent)evt).keySig);
+                    seq.meterMap.addMeter(meter);
+                    prevMeter = meter;
                 }
                 else if (evt is MarkerEvent)
                 {                 

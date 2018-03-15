@@ -41,9 +41,9 @@
             // 
             // btnPlay
             // 
-            this.btnPlay.Location = new System.Drawing.Point(399, 11);
+            this.btnPlay.Location = new System.Drawing.Point(362, 11);
             this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(40, 23);
+            this.btnPlay.Size = new System.Drawing.Size(42, 23);
             this.btnPlay.TabIndex = 1;
             this.btnPlay.Text = "Play";
             this.btnPlay.UseVisualStyleBackColor = true;
@@ -51,9 +51,9 @@
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(445, 11);
+            this.btnStop.Location = new System.Drawing.Point(409, 11);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(40, 23);
+            this.btnStop.Size = new System.Drawing.Size(42, 23);
             this.btnStop.TabIndex = 2;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
@@ -62,9 +62,9 @@
             // btnRec
             // 
             this.btnRec.ForeColor = System.Drawing.Color.Red;
-            this.btnRec.Location = new System.Drawing.Point(491, 11);
+            this.btnRec.Location = new System.Drawing.Point(456, 11);
             this.btnRec.Name = "btnRec";
-            this.btnRec.Size = new System.Drawing.Size(40, 23);
+            this.btnRec.Size = new System.Drawing.Size(42, 23);
             this.btnRec.TabIndex = 3;
             this.btnRec.Text = "Rec";
             this.btnRec.UseVisualStyleBackColor = true;
@@ -72,7 +72,7 @@
             // 
             // hsbSeqPos
             // 
-            this.hsbSeqPos.Location = new System.Drawing.Point(198, 11);
+            this.hsbSeqPos.Location = new System.Drawing.Point(176, 11);
             this.hsbSeqPos.Name = "hsbSeqPos";
             this.hsbSeqPos.Size = new System.Drawing.Size(166, 23);
             this.hsbSeqPos.TabIndex = 4;
@@ -83,18 +83,18 @@
             this.lblPosCounter.BackColor = System.Drawing.Color.Black;
             this.lblPosCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPosCounter.ForeColor = System.Drawing.Color.LawnGreen;
-            this.lblPosCounter.Location = new System.Drawing.Point(566, 11);
+            this.lblPosCounter.Location = new System.Drawing.Point(518, 11);
             this.lblPosCounter.Name = "lblPosCounter";
-            this.lblPosCounter.Size = new System.Drawing.Size(134, 23);
+            this.lblPosCounter.Size = new System.Drawing.Size(120, 23);
             this.lblPosCounter.TabIndex = 5;
             this.lblPosCounter.Text = "00:00:00:000";
             this.lblPosCounter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnPanic
             // 
-            this.btnPanic.Location = new System.Drawing.Point(118, 11);
+            this.btnPanic.Location = new System.Drawing.Point(114, 11);
             this.btnPanic.Name = "btnPanic";
-            this.btnPanic.Size = new System.Drawing.Size(43, 23);
+            this.btnPanic.Size = new System.Drawing.Size(42, 23);
             this.btnPanic.TabIndex = 12;
             this.btnPanic.Text = "Panic";
             this.btnPanic.UseVisualStyleBackColor = true;
@@ -104,7 +104,7 @@
             // 
             this.btnStep.Location = new System.Drawing.Point(20, 11);
             this.btnStep.Name = "btnStep";
-            this.btnStep.Size = new System.Drawing.Size(43, 23);
+            this.btnStep.Size = new System.Drawing.Size(42, 23);
             this.btnStep.TabIndex = 13;
             this.btnStep.Text = "Step";
             this.btnStep.UseVisualStyleBackColor = true;
@@ -112,9 +112,9 @@
             // 
             // btnLoop
             // 
-            this.btnLoop.Location = new System.Drawing.Point(69, 11);
+            this.btnLoop.Location = new System.Drawing.Point(67, 11);
             this.btnLoop.Name = "btnLoop";
-            this.btnLoop.Size = new System.Drawing.Size(43, 23);
+            this.btnLoop.Size = new System.Drawing.Size(42, 23);
             this.btnLoop.TabIndex = 15;
             this.btnLoop.Text = "Loop";
             this.btnLoop.UseVisualStyleBackColor = true;
@@ -125,9 +125,9 @@
             this.lblBeatCounter.BackColor = System.Drawing.Color.Black;
             this.lblBeatCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBeatCounter.ForeColor = System.Drawing.Color.LawnGreen;
-            this.lblBeatCounter.Location = new System.Drawing.Point(720, 11);
+            this.lblBeatCounter.Location = new System.Drawing.Point(643, 11);
             this.lblBeatCounter.Name = "lblBeatCounter";
-            this.lblBeatCounter.Size = new System.Drawing.Size(120, 23);
+            this.lblBeatCounter.Size = new System.Drawing.Size(110, 23);
             this.lblBeatCounter.TabIndex = 16;
             this.lblBeatCounter.Text = "000:00:000";
             this.lblBeatCounter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -147,7 +147,7 @@
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnPlay);
             this.Name = "ControlPanel";
-            this.Size = new System.Drawing.Size(860, 50);
+            this.Size = new System.Drawing.Size(900, 50);
             this.ResumeLayout(false);
 
         }

@@ -40,6 +40,8 @@ namespace SuperConductor
         Transport transport;
         String currentFilename;
         Sequence currentSeq;
+        
+        //ControlPanel controlPanel;
 
         public SuperWindow()
         {
@@ -47,6 +49,10 @@ namespace SuperConductor
             transport = new Transport(this);
             currentFilename = null;
             currentSeq = new Sequence();
+
+            //controlPanel = new ControlPanel();
+            //controlPanel.Dock = DockStyle.Top;
+            //this.Controls.Add(controlPanel);
 
             InitializeComponent();
 
@@ -223,6 +229,16 @@ namespace SuperConductor
         {
             masterTimer.Stop();
             controlPanel.setPlaying(false);
+        }
+
+        public void tempoChange(int rate)
+        {
+            controlPanel.setTempo(rate);
+        }
+
+        public void meterChange(int numer, int denom, int keysig)
+        {
+            controlPanel.setMeter(numer, denom, keysig);
         }
     }
 }

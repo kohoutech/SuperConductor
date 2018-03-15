@@ -67,7 +67,7 @@
             this.helpToolStripMenuItem});
             this.superMenu.Location = new System.Drawing.Point(0, 0);
             this.superMenu.Name = "superMenu";
-            this.superMenu.Size = new System.Drawing.Size(864, 24);
+            this.superMenu.Size = new System.Drawing.Size(934, 24);
             this.superMenu.TabIndex = 4;
             this.superMenu.Text = "menuStrip1";
             // 
@@ -181,7 +181,7 @@
             // 
             this.superStatus.Location = new System.Drawing.Point(0, 389);
             this.superStatus.Name = "superStatus";
-            this.superStatus.Size = new System.Drawing.Size(864, 22);
+            this.superStatus.Size = new System.Drawing.Size(934, 22);
             this.superStatus.TabIndex = 5;
             this.superStatus.Text = "statusStrip1";
             // 
@@ -197,7 +197,7 @@
             // 
             this.TrackSplit.BackColor = System.Drawing.Color.Crimson;
             this.TrackSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TrackSplit.Location = new System.Drawing.Point(0, 74);
+            this.TrackSplit.Location = new System.Drawing.Point(0, 24);
             this.TrackSplit.Name = "TrackSplit";
             // 
             // TrackSplit.Panel1
@@ -208,8 +208,8 @@
             // TrackSplit.Panel2
             // 
             this.TrackSplit.Panel2.Controls.Add(this.trackData);
-            this.TrackSplit.Size = new System.Drawing.Size(864, 315);
-            this.TrackSplit.SplitterDistance = 435;
+            this.TrackSplit.Size = new System.Drawing.Size(934, 365);
+            this.TrackSplit.SplitterDistance = 470;
             this.TrackSplit.SplitterWidth = 6;
             this.TrackSplit.TabIndex = 7;
             this.TrackSplit.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.TrackSplit_SplitterMoved);
@@ -220,7 +220,7 @@
             this.trackList.Location = new System.Drawing.Point(0, 0);
             this.trackList.MaximumSize = new System.Drawing.Size(835, 6447);
             this.trackList.Name = "trackList";
-            this.trackList.Size = new System.Drawing.Size(435, 315);
+            this.trackList.Size = new System.Drawing.Size(470, 365);
             this.trackList.TabIndex = 0;
             // 
             // trackData
@@ -229,7 +229,7 @@
             this.trackData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackData.Location = new System.Drawing.Point(0, 0);
             this.trackData.Name = "trackData";
-            this.trackData.Size = new System.Drawing.Size(423, 315);
+            this.trackData.Size = new System.Drawing.Size(458, 365);
             this.trackData.TabIndex = 0;
             // 
             // controlPanel
@@ -238,14 +238,14 @@
             this.controlPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.controlPanel.Location = new System.Drawing.Point(0, 24);
             this.controlPanel.Name = "controlPanel";
-            this.controlPanel.Size = new System.Drawing.Size(864, 50);
-            this.controlPanel.TabIndex = 6;
+            this.controlPanel.Size = new System.Drawing.Size(934, 50);
+            this.controlPanel.TabIndex = 8;
             // 
             // SuperWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(864, 411);
+            this.ClientSize = new System.Drawing.Size(934, 411);
             this.Controls.Add(this.TrackSplit);
             this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.superStatus);
@@ -268,7 +268,6 @@
 
         #endregion
 
-        private Widgets.ControlPanel controlPanel1;
         private System.Windows.Forms.MenuStrip superMenu;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newFileMenuItem;
@@ -287,10 +286,10 @@
         private System.Windows.Forms.Timer masterTimer;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private Widgets.ControlPanel controlPanel;
         private System.Windows.Forms.SplitContainer TrackSplit;
         private UI.ViewTrack.TrackDataPane trackData;
         private UI.ViewTrack.TrackListPane trackList;
+        private Widgets.ControlPanel controlPanel;
     }
 }
 
