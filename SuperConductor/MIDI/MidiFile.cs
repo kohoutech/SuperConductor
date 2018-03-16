@@ -65,8 +65,7 @@ namespace Transonic.MIDI
             for (int i = 0; i < trackCount; i++)
             {
                 curTrackNum = i;
-                Track track = loadTrackData(stream);
-                seq.addTrack(track);
+                Track track = loadTrackData(stream, seq);                
             }
 
             buildMaps(seq);
@@ -75,7 +74,7 @@ namespace Transonic.MIDI
         }
 
         //read data from a single track chunk
-        private static Track loadTrackData(MidiInStream stream)
+        private static Track loadTrackData(MidiInStream stream, Sequence seq)
         {
             //read track header
             String trackSig = stream.getString(4);
@@ -87,6 +86,7 @@ namespace Transonic.MIDI
             }
 
             Track track = new Track("Track " + curTrackNum.ToString());
+            seq.addTrack(track);
 
             int startpos = stream.getDataPos();
             currentTime = 0;

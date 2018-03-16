@@ -77,7 +77,11 @@
     <Compile Include="MIDI\Track.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\ViewTrack\DataStrip.cs" />
     <Compile Include="UI\ViewTrack\TrackDataPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ViewTrack\TrackDataPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\ViewTrack\TrackListPane.cs">

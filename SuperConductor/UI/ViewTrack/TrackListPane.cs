@@ -89,8 +89,10 @@ namespace SuperConductor.UI.ViewTrack
             base.OnResize(e);
 
             stripPanel.Size = new Size(this.Width, this.Height - HEADERHEIGHT - horzScroll.Height);
+
             horzScroll.Location = new Point(0, this.Height - horzScroll.Height);
             horzScroll.Size = new Size(this.Width, horzScroll.Height);
+
             int delta = listWidth - this.Width;
             horzScroll.Maximum = delta;
         }

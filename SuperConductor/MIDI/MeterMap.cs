@@ -98,6 +98,21 @@ namespace Transonic.MIDI
             return meters[meterPos];
         }
 
+        public void tickToBeat(int tick, out int measure, out int beat, out int ticks)
+        {
+            int meterPos;
+            Meter meter = findMeter(tick, out meterPos);
+
+            int beatticks = (seq.division * 4) / meter.denom;
+            int measureticks = (beatticks * meter.numer);
+
+            ticks = tick - meter.tick;
+            measure = meter.measure + (ticks / measureticks);
+            ticks = ticks % measureticks;
+            beat = (ticks / beatticks) + 1;
+            ticks = ticks % beatticks;
+        }
+
     }
 
 //-----------------------------------------------------------------------------

@@ -165,10 +165,19 @@ namespace Transonic.MIDI
             if (evt.tick > length)
             {
                 length = (int)evt.tick;
-                if ((seq != null) && (length > seq.length))
+                if (length > seq.length)
                 {
                     seq.length = length;
-                }               
+                }
+            }
+
+            int measure;
+            int beat;
+            int ticks;
+            seq.meterMap.tickToBeat((int)evt.tick, out measure, out beat, out ticks);
+            if (measure > measures)
+            {
+                measures = measure;
             }
         }
 

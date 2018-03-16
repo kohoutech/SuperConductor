@@ -84,6 +84,7 @@ namespace SuperConductor
             transport.setSequence(currentSeq);
             controlPanel.setSequence(currentSeq);
             trackList.setSequence(currentSeq);
+            trackData.setSequence(currentSeq);
             setTrackOutput();
         }
 
