@@ -225,7 +225,6 @@
             // 
             // trackData
             // 
-            this.trackData.BackColor = System.Drawing.Color.LightBlue;
             this.trackData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackData.Location = new System.Drawing.Point(0, 0);
             this.trackData.Name = "trackData";

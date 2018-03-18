@@ -32,14 +32,12 @@ namespace SuperConductor.UI.ViewTrack
     {
         public const int STRIPHEIGHT = 25;
 
-        TrackListPane trackList;
+        TrackListPane trackList;        //parent widget
         int trackNum;
         Track track;
 
         float ypos;
         float height;
-        float[] colwidth;
-        float width;
 
         public TrackStrip(TrackListPane _trackList, int num) 
         {
@@ -48,15 +46,6 @@ namespace SuperConductor.UI.ViewTrack
             track = null;
             ypos = 0;
             height = STRIPHEIGHT - 1;
-
-            //column layout
-            colwidth = new float[14];
-            width = 0;
-            for (int i = 0; i < 14; i++)
-            {
-                colwidth[i] = trackList.colwidth[i];
-                width += colwidth[i];
-            }
         }
 
         public void setPos(float _ypos)
@@ -75,6 +64,10 @@ namespace SuperConductor.UI.ViewTrack
 
         public void paint(Graphics g)
         {
+            int[] colwidths = trackList.colWidths;
+            int width = trackList.listWidth;
+
+            //strip background
             float bottom = (ypos + height);
             g.FillRectangle(Brushes.White, 0, ypos, width, height);
             g.DrawLine(Pens.Black, 0, bottom, width, bottom);
@@ -84,60 +77,86 @@ namespace SuperConductor.UI.ViewTrack
             titleFormat.Alignment = StringAlignment.Center;
             titleFormat.FormatFlags = StringFormatFlags.NoWrap;
 
-            RectangleF rect = new RectangleF(0, ypos, colwidth[0], height);
+            //track number
+            RectangleF rect = new RectangleF(0, ypos, colwidths[0], height);
             g.DrawString(trackNum.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
 
+            //other track data
             float xpos = 0;
             if (track != null)
             {
-                xpos = colwidth[0];
-                rect = new RectangleF(xpos, ypos, colwidth[1], height);
+                //track name
+                xpos = colwidths[0];
+                rect = new RectangleF(xpos, ypos, colwidths[1], height);
                 g.DrawString(track.name, SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[1];
-                rect = new RectangleF(xpos, ypos, colwidth[2], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[2];
-                rect = new RectangleF(xpos, ypos, colwidth[3], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[3];
-                rect = new RectangleF(xpos, ypos, colwidth[4], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[4];
-                rect = new RectangleF(xpos, ypos, colwidth[5], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[5];
-                rect = new RectangleF(xpos, ypos, colwidth[6], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[6];
-                rect = new RectangleF(xpos, ypos, colwidth[7], height);
-                g.DrawString("x", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[7];
-                rect = new RectangleF(xpos, ypos, colwidth[8], height);
+
+                //track mute/solo/record
+                xpos += colwidths[1];
+                rect = new RectangleF(xpos, ypos, colwidths[2], height);
+                g.DrawString(track.muted ? "m" : " ", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+                xpos += colwidths[2];
+                rect = new RectangleF(xpos, ypos, colwidths[3], height);
+                g.DrawString(track.soloing ? "s" : " ", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+                xpos += colwidths[3];
+                rect = new RectangleF(xpos, ypos, colwidths[4], height);
+                g.DrawString(track.recording ? "r" : " ", SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+
+                //track input
+                xpos += colwidths[4];
+                rect = new RectangleF(xpos, ypos, colwidths[5], height);
+                g.DrawString(track.inDev != null ? track.inDev.devName : "---", 
+                    SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+                xpos += colwidths[5];
+                rect = new RectangleF(xpos, ypos, colwidths[6], height);
+                g.DrawString(track.inDev != null ? (track.inputChannel + 1).ToString()  : "--", 
+                    SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+
+                //track output
+                xpos += colwidths[6];
+                rect = new RectangleF(xpos, ypos, colwidths[7], height);
+                g.DrawString(track.outDev != null ? track.outDev.devName : "---", 
+                    SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+                xpos += colwidths[7];
+                rect = new RectangleF(xpos, ypos, colwidths[8], height);
+                g.DrawString(track.outDev != null ? (track.outputChannel + 1).ToString() : "--", 
+                    SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+
+                //track patchname
+                xpos += colwidths[8];
+                rect = new RectangleF(xpos, ypos, colwidths[9], height);
+                g.DrawString(track.patchname != null ? track.patchname : track.defPatchname, 
+                    SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
+
+                //track time/key/vel adjust
+                xpos += colwidths[9];
+                rect = new RectangleF(xpos, ypos, colwidths[10], height);
                 g.DrawString(track.keyOfs.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[8];
-                rect = new RectangleF(xpos, ypos, colwidth[9], height);
+                xpos += colwidths[10];
+                rect = new RectangleF(xpos, ypos, colwidths[11], height);
                 g.DrawString(track.velOfs.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[9];
-                rect = new RectangleF(xpos, ypos, colwidth[10], height);
+                xpos += colwidths[11];
+                rect = new RectangleF(xpos, ypos, colwidths[12], height);
                 g.DrawString(track.timeOfs.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[10];
-                rect = new RectangleF(xpos, ypos, colwidth[11], height);
+
+                //track vol/pan/size
+                xpos += colwidths[12];
+                rect = new RectangleF(xpos, ypos, colwidths[13], height);
                 g.DrawString(track.volume.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[11];
-                rect = new RectangleF(xpos, ypos, colwidth[12], height);
+                xpos += colwidths[13];
+                rect = new RectangleF(xpos, ypos, colwidths[14], height);
                 g.DrawString(track.pan.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
-                xpos += colwidth[12];
-                rect = new RectangleF(xpos, ypos, colwidth[13], height);
+                xpos += colwidths[14];
+                rect = new RectangleF(xpos, ypos, colwidths[15], height);
                 g.DrawString(track.events.Count.ToString(), SystemFonts.DefaultFont, Brushes.Black, rect, titleFormat);
             }
 
+            //track col separator lines
             xpos = 0;
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 16; i++)
             {
-                xpos += colwidth[i];
+                xpos += colwidths[i];
                 g.DrawLine(Pens.Green, xpos, ypos, xpos, (ypos + height));
             }
-
         }
     }
 }

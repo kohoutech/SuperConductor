@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -129,7 +128,7 @@ namespace SuperConductor.Widgets
 
 //-----------------------------------------------------------------------------
 
-        public void timerTick(int tick, int msTime, int measure, int beat, int beatticks)
+        public void timerTick(int tick, int msTime, int measure, decimal beat)
         {
             int msVal = msTime % 1000;
             int secPos = msTime / 1000;
@@ -140,7 +139,9 @@ namespace SuperConductor.Widgets
             lblPosCounter.Text = hrVal.ToString("D2") + ":" + minVal.ToString("D2") + ":" +
                 secVal.ToString("D2") + "." + msVal.ToString("D3");
 
-            lblBeatCounter.Text = measure.ToString("D3") + ":" + beat.ToString("D2") + ":" + beatticks.ToString("D3");
+            int wholebeat = ((int)beat);
+            int partbeat = (int)((beat - wholebeat) * 1000);
+            lblBeatCounter.Text = (measure + 1).ToString("D3") + ":" + wholebeat.ToString("D2") + ":" + partbeat.ToString("D3");
 
             hsbSeqPos.Value = tick;
 

@@ -33,6 +33,8 @@ namespace Transonic.MIDI
 
         public int length;                  //total length in ticks
         public int measures;                //num of measures in track
+        public int hiNote;
+        public int loNote;
 
         //track i/o
         public InputDevice inDev;
@@ -41,6 +43,7 @@ namespace Transonic.MIDI
         public int outputChannel;
 
         public bool muted;
+        public bool soloing;
         public bool recording;
 
         public int keyOfs;
@@ -49,16 +52,20 @@ namespace Transonic.MIDI
 
         public int bankNum;
         public int patchNum;
+        public String patchname;
+        public String defPatchname;
         public int volume;
         public int pan;
 
-        public Track(String name)
-            : base(name)
+        public Track(Sequence _seq)
+            : base("track")
         {
-            seq = null;
+            seq = _seq;
             events = new List<Event>();
             length = 0;
             measures = 0;
+            hiNote = 0;
+            loNote = 127;
 
             muted = false;
             recording = false;
@@ -74,6 +81,8 @@ namespace Transonic.MIDI
 
             bankNum = 0;
             patchNum = 0;
+            patchname = null;
+            defPatchname = defPatchname = MidiSystem.GMNames[0];
             volume = 127;
             pan = 64;
         }
@@ -94,14 +103,25 @@ namespace Transonic.MIDI
             }
         }
 
+        public void setSoloing(bool on)
+        {
+            soloing = on;
+        }
+
         public void setRecording(bool on)
         {
             recording = on;
         }
 
-        public void setPatch(int patch)
+        public void setPatchNum(int patch)
         {
-            patchNum = patch;
+            patchNum = patch;            
+            defPatchname = (outputChannel != 9) ? MidiSystem.GMNames[patch] : "GM Drumkit";
+        }
+
+        public void setPatchname(String name)
+        {
+            patchname = name;
         }
 
         public void setVolume(int vol)
@@ -109,6 +129,10 @@ namespace Transonic.MIDI
             volume = vol;
         }
 
+        public void setPan(int _pan)
+        {
+            pan = _pan;
+        }
 
 //- track input -----------------------------------------------------------------
 
@@ -134,6 +158,7 @@ namespace Transonic.MIDI
         public void setOutputChannel(int channel)
         {
             outputChannel = channel;
+            defPatchname = (outputChannel != 9) ? MidiSystem.GMNames[patchNum] : "GM Drumkit";
         }
 
         public void sendMessage(Message msg)
@@ -159,26 +184,65 @@ namespace Transonic.MIDI
 
 //- event handling ------------------------------------------------------------
 
-        public void addEvent(Event evt)
+        //add new event to track positioned by tick
+        public void addEvent(Event evt, int tick)
         {
+            evt.setTick(tick);
             events.Add(evt);
-            if (evt.tick > length)
+
+            if ((evt is MessageEvent) && (((MessageEvent)evt).msg is NoteOnMessage))
             {
-                length = (int)evt.tick;
+                NoteOnMessage noteOn = (NoteOnMessage)((MessageEvent)evt).msg;
+                hiNote = (noteOn.noteNumber > hiNote) ? noteOn.noteNumber : hiNote;
+                loNote = (noteOn.noteNumber < loNote) ? noteOn.noteNumber : loNote;
+            }
+
+            if (tick > length)
+            {
+                length = tick;
                 if (length > seq.length)
                 {
                     seq.length = length;
                 }
             }
 
-            int measure;
-            int beat;
-            int ticks;
-            seq.meterMap.tickToBeat((int)evt.tick, out measure, out beat, out ticks);
-            if (measure > measures)
+            seq.meterMap.tickToBeat(tick, out evt.measure, out evt.beat);
+            if ((evt.measure + 1) > measures)
             {
-                measures = measure;
+                measures = evt.measure + 1;
+                if (measures > seq.measures)
+                {
+                    seq.measures = measures;
+                }
             }
+        }
+
+        //add new event to track positioned by measure and beat
+        public void addEvent(Event evt, int measure, decimal beat)
+        {
+        }
+
+        public Event findEvent(int measure, decimal beat)
+        {
+            int eventNum = 0;
+            while ((eventNum < events.Count) && (events[eventNum].measure < measure))
+                eventNum++;
+            while ((eventNum < events.Count) && (events[eventNum].measure == measure) && (events[eventNum].beat < beat))
+                eventNum++;
+            return (eventNum < events.Count) ? events[eventNum] : null;
+        }
+
+        public List<Event> findMeasureEvents(int measure)
+        {
+            List<Event> result = new List<Event>();
+            int eventNum = 0;
+            while ((eventNum < events.Count) && (events[eventNum].measure < measure))
+                eventNum++;
+            while ((eventNum < events.Count) && (events[eventNum].measure == measure))
+            {
+                result.Add(events[eventNum++]);
+            }
+            return result;
         }
 
 //- track saving -------------------------------------------------------------

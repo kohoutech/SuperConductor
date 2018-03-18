@@ -32,15 +32,15 @@ namespace SuperConductor.UI.ViewTrack
     {
         public const int TRACKCOUNT = 256;
         public const int HEADERHEIGHT = 30;
-        public readonly string[] colTitles = {"", "Name", "I/O", "In Port", "In Channel", "Out Port", "Out Channel",
+        public readonly string[] colTitles = {"#", "Name", "M", "S", "R", "In Port", "In Channel", "Out Port", "Out Channel",
                                               "Patch", "Key+", "Vel+", "Time+", "Vol", "Pan", "Size"};
 
-        public readonly int[] colWidths = { 27, 150, 35, 56, 60, 56, 68, 127, 40, 40, 40, 36, 36, 60 };
+        public readonly int[] colWidths = { 27, 150, 14, 14, 14, 56, 60, 56, 68, 127, 40, 40, 40, 36, 36, 60 };
 
         public SuperWindow superWindow;
-        public SplitContainer trackSplit;
+        public SplitContainer trackSplit;       //parent widget
+        public TrackStripPanel stripPanel;      //child widget
         public Sequence seq;
-        public TrackStripPanel stripPanel;
 
         public int[] colwidth;
         public int listWidth;
@@ -55,9 +55,9 @@ namespace SuperConductor.UI.ViewTrack
             seq = null;
 
             //header layout
-            colwidth = new int[14];
+            colwidth = new int[16];
             listWidth = 0;
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 16; i++)
             {
                 colwidth[i] = colWidths[i];
                 listWidth += colwidth[i];
@@ -133,7 +133,7 @@ namespace SuperConductor.UI.ViewTrack
             titleFormat.Alignment = StringAlignment.Center;
             titleFormat.FormatFlags = StringFormatFlags.NoWrap;
 
-            for (int i = 0; i < 14; i++)
+            for (int i = 0; i < 16; i++)
             {
                 RectangleF titleRect = new RectangleF(xpos, 0, colwidth[i], HEADERHEIGHT);
                 g.DrawString(colTitles[i], SystemFonts.DefaultFont, Brushes.Black, titleRect, titleFormat); 

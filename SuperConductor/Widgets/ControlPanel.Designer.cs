@@ -129,7 +129,7 @@
             this.lblBeatCounter.Name = "lblBeatCounter";
             this.lblBeatCounter.Size = new System.Drawing.Size(110, 23);
             this.lblBeatCounter.TabIndex = 16;
-            this.lblBeatCounter.Text = "000:00:000";
+            this.lblBeatCounter.Text = "001:00:000";
             this.lblBeatCounter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ControlPanel

@@ -39,8 +39,6 @@ namespace Transonic.MIDI
         public MeterMap meterMap;
         public MarkerMap markerMap;
 
-        public Track track0Saved;
-
         public Sequence() : this(DEFAULTDIVISION) { }
 
         public Sequence(int _division)
@@ -52,24 +50,14 @@ namespace Transonic.MIDI
             tracks = new List<Track>();
             tempoMap = new TempoMap(this);
             meterMap = new MeterMap(this);
-            markerMap = new MarkerMap(this);
-
-            track0Saved = null;
+            markerMap = new MarkerMap(this);            
         }
 
-        public void addTrack(Track track)
+        public Track addTrack()
         {
+            Track track = new Track(this);
             tracks.Add(track);
-            track.seq = this;
-            if (track.length > length)
-            {
-                length = track.length;
-            }
-            if (track.measures > measures)
-            {
-                measures = track.measures;
-            }
-
+            return track;
         }
 
         public void deleteTrack(Track track)

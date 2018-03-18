@@ -25,16 +25,18 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using Transonic.MIDI;
+
 namespace SuperConductor.UI.ViewTrack
 {
     class TrackDataPanel : UserControl
     {
-
-        public TrackDataPane trackData;
+        public TrackDataPane trackData;     //parent widget
+        public Sequence seq;
 
         public DataStrip[] strips;
 
-        public int listHeight;            
+        public int dataHeight;            
         public int vertOffset;
 
         public TrackDataPanel(TrackDataPane _trackData)
@@ -42,15 +44,34 @@ namespace SuperConductor.UI.ViewTrack
             trackData = _trackData;
 
             //data strips
-            listHeight = 0;
             strips = new DataStrip[TrackListPane.TRACKCOUNT];
             for (int i = 0; i < TrackListPane.TRACKCOUNT; i++)
             {
                 strips[i] = null;                
             }
 
+            this.BackColor = Color.Salmon;
             this.DoubleBuffered = true;
             vertOffset = 0;
+        }
+
+//- track management ----------------------------------------------------------
+
+        public void setSequence(Sequence _seq)
+        {
+            seq = _seq;
+
+            //create data strips for track in seq
+            dataHeight = 0;
+            for (int trackNum = 0; trackNum < seq.tracks.Count; trackNum++)
+            {
+                Track track = seq.tracks[trackNum];
+                DataStrip strip = new DataStrip(trackData, track);          //create data strip from track
+                strips[trackNum] = strip;
+                strip.width = trackData.measureOffsets[track.measures-1] + trackData.measureWidths[track.measures-1];
+                strip.setPos(dataHeight);
+                dataHeight += TrackStrip.STRIPHEIGHT;
+            }            
         }
 
 //- display -------------------------------------------------------------------
@@ -61,13 +82,38 @@ namespace SuperConductor.UI.ViewTrack
             Graphics g = e.Graphics;
             g.TranslateTransform(-trackData.horzOffset, -vertOffset);
 
+            //draw measure lines for track data
+            float xpos = 0;
+            int measnum = 1;
+            if (trackData.measureWidths != null)
+            {
+                for (int i = 0; i < trackData.measureWidths.Length; i++)
+                {
+                    xpos += trackData.measureWidths[i];
+                    g.DrawLine(Pens.Green, xpos, 0, xpos, trackData.trackList.stripPanel.listHeight);
+                    measnum++;
+                }
+            }
+
+            //draw background measure lines
+            while (xpos < this.Width)
+            {
+                xpos += TrackDataPane.BEATWIDTH * 4;
+                g.DrawLine(Pens.Green, xpos, 0, xpos, this.Height);
+                measnum++;
+            }
+
             //draw track strips
             for (int i = 0; i < TrackListPane.TRACKCOUNT; i++)
             {
-                if (strips[i] != null) {
+                if (strips[i] != null)
+                {
                     strips[i].paint(g);
                 }
             }
+
+            //draw current pos marker
+            g.DrawLine(Pens.Black, trackData.curDataPos, 0, trackData.curDataPos, trackData.trackList.stripPanel.listHeight);
         }
 
     }

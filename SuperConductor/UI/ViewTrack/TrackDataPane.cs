@@ -23,6 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 using Transonic.MIDI;
 
@@ -31,27 +32,29 @@ namespace SuperConductor.UI.ViewTrack
     class TrackDataPane : UserControl
     {
         public const int HEADERHEIGHT = 30;
-        public const float BEATWIDTH = 20;
+        public const float BEATWIDTH = 16;
         public const float BLANKMEASUREWIDTH = BEATWIDTH * 4;
         
-        public SuperWindow superWindow;
-        public TrackListPane trackList;
+        public SuperWindow superWindow;         //parent widget
+        public TrackListPane trackList;         //sibling widget
+        public TrackDataPanel dataPanel;        //child widget
         public Sequence seq;
-        public TrackDataPanel dataPanel;
 
         public HScrollBar horzScroll;
         public int horzOffset;
 
         public VScrollBar vertScroll;
 
+        public float[] measureOffsets;
         public float[] measureWidths;
-        public int measureWidth;
+        public float measureWidth;
 
+        public int curMeasure;
+        public decimal curBeat;
+        public float curDataPos;
 
         public TrackDataPane()
         {
-            BackColor = Color.LightBlue;
-
             superWindow = null;
             trackList = null;
 
@@ -80,15 +83,26 @@ namespace SuperConductor.UI.ViewTrack
             dataPanel.Size = new Size(this.Width, this.Height - HEADERHEIGHT - horzScroll.Height);
             Controls.Add(dataPanel);
 
+            this.DoubleBuffered = true;
+
             horzOffset = 0;
 
+            measureOffsets = null;
             measureWidths = null;
             measureWidth = 0;
+
+            curMeasure = 0;
+            curBeat = 0;
+            curDataPos = 0;
         }
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
+
+            dataPanel.Location = new Point(0, HEADERHEIGHT);
+            dataPanel.Size = new Size(this.Width, this.Height - HEADERHEIGHT - horzScroll.Height);
+
             vertScroll.Location = new Point(this.Right - vertScroll.Width, 0);
             vertScroll.Size = new Size(vertScroll.Width, this.Height - horzScroll.Height);
 
@@ -100,18 +114,22 @@ namespace SuperConductor.UI.ViewTrack
                 vertScroll.Maximum = trackList.stripPanel.listHeight - trackList.stripPanel.Height + 9;
             }
 
-            horzScroll.Maximum = (measureWidths != null) ? measureWidth - dataPanel.Width + 9 : 0;
+            horzScroll.Maximum = (measureWidths != null) ? (int)measureWidth - (this.Width - vertScroll.Width) + 10 : 0;
         }
 
         private void vertScroll_ValueChanged(Object sender, EventArgs e)
         {
             trackList.stripPanel.vertOffset = vertScroll.Value;
             trackList.Invalidate(true);
+
+            dataPanel.vertOffset = vertScroll.Value;
+            dataPanel.Invalidate(true);
         }
 
         private void horzScroll_ValueChanged(Object sender, EventArgs e)
         {
-            horzOffset = horzScroll.Value;
+
+            horzOffset = (measureWidths != null) ? horzScroll.Value : 0;            
             this.Invalidate(true);
         }
 
@@ -120,18 +138,57 @@ namespace SuperConductor.UI.ViewTrack
         public void setSequence(Sequence _seq)
         {
             seq = _seq;
+            measureOffsets = new float[seq.measures];
+            measureWidths = new float[seq.measures];
+
             int meternum = 0;
+            measureWidth = 0;
             Meter meter = seq.meterMap.meters[meternum++];
-            float measurepos = 0;
             for (int measNum = 0; measNum < seq.measures; measNum++)
             {
-                measureWidths[measNum] = ((meter.numer * BEATWIDTH) / (meter.denom)) + measurepos;
-                measurepos = measureWidths[measNum];
+                measureOffsets[measNum] = measureWidth;
+                measureWidths[measNum] =  ((meter.numer * BEATWIDTH * 4) / (meter.denom));
+                measureWidth += measureWidths[measNum];
                 if ((meternum < seq.meterMap.meters.Count) && (measNum == seq.meterMap.meters[meternum].measure))
                 {
                     meter = seq.meterMap.meters[meternum++];
                 }
             }
+
+            horzScroll.Maximum = (int)measureWidth - (this.Width - vertScroll.Width) + 10;
+            horzScroll.Value = 0;
+            horzOffset = 0;
+
+            //now that we have laid out our measures, get the data strips for each track
+            dataPanel.setSequence(seq);
+
+            this.Invalidate(true);
+        }
+
+        public void setCurrentPos(int measure, decimal beat)
+        {
+            curMeasure = measure;
+            curBeat = beat;
+            curDataPos = 0;
+            if ((measureOffsets != null) && (measure < measureOffsets.Length))
+            {
+                curDataPos = measureOffsets[measure] + ((float)beat * BEATWIDTH);
+            }
+
+            //if we've passed the left side of the window
+            if (curDataPos < (horzScroll.Value))
+            {
+                int newofs = (int)curDataPos;
+                horzScroll.Value = (newofs > horzScroll.Minimum) ? newofs : horzScroll.Minimum;
+            }
+
+            //if we've passed the right side of the window
+            if ((int)curDataPos > (horzScroll.Value + this.Width - vertScroll.Width))
+            {
+                int newofs = (int)curDataPos;
+                horzScroll.Value = (newofs < horzScroll.Maximum) ? newofs : horzScroll.Maximum;
+            }
+            
             this.Invalidate(true);
         }
 
@@ -141,11 +198,13 @@ namespace SuperConductor.UI.ViewTrack
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TranslateTransform(-horzOffset, 0);
 
             //draw measure header
-            g.FillRectangle(Brushes.White, 0, 0, this.Width, HEADERHEIGHT);
-            g.DrawLine(Pens.Black, 0, (HEADERHEIGHT - 1), this.Width, (HEADERHEIGHT - 1));
+            float headerWidth = (measureWidths != null) ? measureWidth : this.Width;
+            g.FillRectangle(Brushes.White, 0, 0, headerWidth, HEADERHEIGHT);
+            g.DrawLine(Pens.Black, 0, (HEADERHEIGHT - 1), headerWidth, (HEADERHEIGHT - 1));
 
             StringFormat titleFormat = new StringFormat();
             titleFormat.LineAlignment = StringAlignment.Center;
@@ -156,6 +215,14 @@ namespace SuperConductor.UI.ViewTrack
             int measnum = 1;
             if (measureWidths != null)
             {
+                for (int i = 0; i < measureWidths.Length; i++) 
+                {
+                    RectangleF titleRect = new RectangleF(xpos, 0, measureWidths[i], HEADERHEIGHT);
+                    g.DrawString(measnum.ToString(), SystemFonts.DefaultFont, Brushes.Black, titleRect, titleFormat);
+                    xpos += measureWidths[i];
+                    g.DrawLine(Pens.Green, xpos, 0, xpos, this.Height - horzScroll.Height);
+                    measnum++;
+                }
             }
 
             while (xpos < this.Width)
@@ -163,7 +230,7 @@ namespace SuperConductor.UI.ViewTrack
                 RectangleF titleRect = new RectangleF(xpos, 0, BLANKMEASUREWIDTH, HEADERHEIGHT);
                 g.DrawString(measnum.ToString(), SystemFonts.DefaultFont, Brushes.Black, titleRect, titleFormat);
                 xpos += BEATWIDTH * 4;
-                g.DrawLine(Pens.Green, xpos, 0, xpos, (HEADERHEIGHT - 1));
+                g.DrawLine(Pens.Green, xpos, 0, xpos, this.Height - horzScroll.Height);
                 measnum++;
             }
         }

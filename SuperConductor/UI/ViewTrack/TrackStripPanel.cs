@@ -29,9 +29,8 @@ namespace SuperConductor.UI.ViewTrack
 {
     public class TrackStripPanel : UserControl
     {
-        public TrackListPane trackList;
-
-        public List<TrackStrip> strips;
+        public TrackListPane trackList;         //parent widget
+        public List<TrackStrip> strips;         //child widgets
 
         public int listHeight;            
         public int vertOffset;

@@ -50,10 +50,6 @@ namespace SuperConductor
             currentFilename = null;
             currentSeq = new Sequence();
 
-            //controlPanel = new ControlPanel();
-            //controlPanel.Dock = DockStyle.Top;
-            //this.Controls.Add(controlPanel);
-
             InitializeComponent();
 
             //wire up components
@@ -139,10 +135,10 @@ namespace SuperConductor
             transport.setCurrentPos(tick);
             int mstime = transport.getCurrentTime();
             int measure = 0;
-            int beat = 0;
-            int beatticks = 0;
-            transport.getCurrentBeat(out measure, out beat, out beatticks);
-            controlPanel.timerTick(tick, mstime, measure, beat, beatticks);
+            decimal beat = 0;
+            currentSeq.meterMap.tickToBeat(tick, out measure, out beat);
+            controlPanel.timerTick(tick, mstime, measure, beat);
+            trackData.setCurrentPos(measure, beat);
         }
 
         public void panic()
@@ -150,19 +146,18 @@ namespace SuperConductor
             currentSeq.allNotesOff();
         }
 
-
 //- file events ---------------------------------------------------------------
 
         private void openFileMenuItem_Click(object sender, EventArgs e)
         {
             String filename = "";
-            //openFileDialog.InitialDirectory = Application.StartupPath;
-            //openFileDialog.InitialDirectory = @"N:\midi";
-            //openFileDialog.DefaultExt = "*.mid";
-            //openFileDialog.Filter = "midi files|*.mid|All files|*.*";
-            //openFileDialog.ShowDialog();
-            //filename = openFileDialog.FileName;
-            filename = "testS.mid";
+            openFileDialog.InitialDirectory = Application.StartupPath;
+            openFileDialog.InitialDirectory = @"N:\midi";
+            openFileDialog.DefaultExt = "*.mid";
+            openFileDialog.Filter = "midi files|*.mid|All files|*.*";
+            openFileDialog.ShowDialog();
+            filename = openFileDialog.FileName;
+            //filename = "testS.mid";
             if (filename.Length == 0) return;
 
             openSequence(filename);
@@ -215,10 +210,10 @@ namespace SuperConductor
             int tick = transport.getCurrentPos();
             int mstime = transport.getCurrentTime();
             int measure = 0;
-            int beat = 0;
-            int beatticks = 0;
-            transport.getCurrentBeat(out measure, out beat, out beatticks);
-            controlPanel.timerTick(tick, mstime, measure, beat, beatticks);
+            decimal beat = 0;
+            currentSeq.meterMap.tickToBeat(tick, out measure, out beat);            
+            controlPanel.timerTick(tick, mstime, measure, beat);
+            trackData.setCurrentPos(measure, beat);
         }
 
         //iMidiView iface
