@@ -197,7 +197,7 @@
             // 
             this.TrackSplit.BackColor = System.Drawing.Color.Crimson;
             this.TrackSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TrackSplit.Location = new System.Drawing.Point(0, 24);
+            this.TrackSplit.Location = new System.Drawing.Point(0, 74);
             this.TrackSplit.Name = "TrackSplit";
             // 
             // TrackSplit.Panel1
@@ -208,7 +208,7 @@
             // TrackSplit.Panel2
             // 
             this.TrackSplit.Panel2.Controls.Add(this.trackData);
-            this.TrackSplit.Size = new System.Drawing.Size(934, 365);
+            this.TrackSplit.Size = new System.Drawing.Size(934, 315);
             this.TrackSplit.SplitterDistance = 470;
             this.TrackSplit.SplitterWidth = 6;
             this.TrackSplit.TabIndex = 7;
@@ -220,7 +220,7 @@
             this.trackList.Location = new System.Drawing.Point(0, 0);
             this.trackList.MaximumSize = new System.Drawing.Size(835, 6447);
             this.trackList.Name = "trackList";
-            this.trackList.Size = new System.Drawing.Size(470, 365);
+            this.trackList.Size = new System.Drawing.Size(470, 315);
             this.trackList.TabIndex = 0;
             // 
             // trackData
@@ -228,7 +228,7 @@
             this.trackData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackData.Location = new System.Drawing.Point(0, 0);
             this.trackData.Name = "trackData";
-            this.trackData.Size = new System.Drawing.Size(458, 365);
+            this.trackData.Size = new System.Drawing.Size(458, 315);
             this.trackData.TabIndex = 0;
             // 
             // controlPanel
